@@ -38,7 +38,7 @@ describe("01", () => {
   it("handles the input file", () => {
     const inputText = fs.readFileSync("./2024/01/input.txt").toString();
     expect(calculate(inputText).differences).toEqual(1319616);
-    expect(calculate(inputText).similariries).toEqual(1319616);
+    expect(calculate(inputText).similariries).toEqual(27267728);
   });
 
   it("calculates the similarities from a subset", () => {
@@ -54,7 +54,6 @@ type Result = {
 
 function calculate(input: string): Result {
   const lines = input.split(/\n/g).filter((x) => (x ? true : false));
-  console.debug(lines);
   let aValues: number[] = [];
   let bValues: number[] = [];
   lines.forEach((line) => {
@@ -64,13 +63,18 @@ function calculate(input: string): Result {
   });
   aValues = aValues.sort((a, b) => a - b);
   bValues = bValues.sort((a, b) => a - b);
-  let differences = 0,
-    similariries = 0;
+  const frequencyMap: Record<string, number> = bValues.reduce((map, num) => {
+    map[num] = (map[num] || 0) + 1;
+    return map;
+  }, {});
+  console.debug(frequencyMap);
+  let differences: number = 0;
+  let similariries: number = 0;
   for (let i = 0; i < aValues.length; i++) {
     differences += Math.abs(bValues[i] - aValues[i]);
     const search = aValues[i];
-    const times = bValues.filter((x) => x === aValues[i]).length;
-    similariries += search * times;
+    const times = frequencyMap[search] || 0;
+    similariries = similariries + search * times;
   }
   return { differences, similariries };
 }
