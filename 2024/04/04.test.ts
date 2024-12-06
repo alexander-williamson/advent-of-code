@@ -1,5 +1,7 @@
 import * as fs from "fs";
 
+const basic_h = fs.readFileSync("2024/04/basic_h.txt").toString();
+const basic_w = fs.readFileSync("2024/04/basic_w.txt").toString();
 const basic_dot_example = fs.readFileSync("2024/04/basic_dot_example.txt").toString();
 
 describe("getStrings", () => {
@@ -16,7 +18,22 @@ describe("getStrings", () => {
     expect(getStrings(basic_dot_example).bottomToTop).toEqual([".X...", "XMAS.", ".A.AX", ".S.M.", "..AX.", ".S..."]);
   });
   it("returns all diagTopLeftToBottomRight strings", () => {
-    expect(getStrings(basic_dot_example).diagTopLeftToBottomRight).toEqual([".", "..", ".SX", "XAA.", ".M.M.", ""]);
+    expect(getStrings(basic_dot_example).diagTopLeftToBottomRight).toEqual([".", "..", ".SX", "XAA.", ".M.M.", "XA.X.", ".SA.", "...", ".S", "."]);
+  });
+});
+
+describe("diagTopLeftToBottomRight", () => {
+  it("returns the right values for a basic dot grid", () => {
+    expect(diagTopLeftToBottomRight(getLines(basic_w))).toEqual(["A", "FB", "KGC", "LHD", "MIE", "NJ", "O"]);
+  });
+  it("returns the right values for a basic dot grid", () => {
+    expect(diagTopLeftToBottomRight(getLines(basic_h))).toEqual(["A", "DB", "GEC", "JHF", "MKI", "NL", "O"]);
+  });
+});
+
+describe.only("diagTopRightToBottomLeft", () => {
+  it("returns the right values for a basic dot grid", () => {
+    expect(diagTopRightToBottomLeft(getLines(basic_w))).toEqual(["E", "DJ", "CIO", "BHN", "AGM", "FL", "K"]);
   });
 });
 
@@ -31,6 +48,67 @@ type Result = {
   diagBottomRightToTopLeft: string[];
 };
 
+function diagTopRightToBottomLeft(lines: string[]): string[] {
+  let words: any[] = [];
+  for (let across = lines[0].length - 1; across > -1; across--) {
+    let word = "";
+    let x = across;
+    let y = 0;
+    while (y < across && x > lines[0].length - across) {
+      word += lines[y][x];
+      x = x - 1;
+      y = y + 1;
+    }
+    words.push(word);
+  }
+  // for (let down = 0; down < lines.length; down++) {
+  //   let word = "";
+  //   let y = down;
+  //   let x = lines[0].length - 1;
+  //   while (y > -1 && x > -1) {
+  //     word += lines[y][x];
+  //     x = x - 1;
+  //     y = y - 1;
+  //   }
+  //   words.push(word);
+  // }
+  return words;
+}
+
+function diagTopLeftToBottomRight(lines: string[]): string[] {
+  let words: any[] = [];
+  for (let down = 0; down < lines.length; down++) {
+    let word = "";
+    let y = down;
+    let x = 0;
+    while (y > -1 && x < lines[0].length) {
+      word += lines[y][x];
+      x = x + 1;
+      y = y - 1;
+    }
+    words.push(word);
+  }
+  for (let across = 1; across < lines[0].length; across++) {
+    let word = "";
+    let x = across;
+    let y = lines.length - 1;
+    while (x < lines[0].length && y > -1) {
+      word += lines[y][x];
+      x = x + 1;
+      y = y - 1;
+    }
+    words.push(word);
+  }
+  return words;
+}
+
+function getLines(input: string): string[] {
+  return input
+    .split(`\n`)
+    .map((x) => x.trim())
+    .filter((x) => x.length > 0);
+}
+
 function getStrings(input: string): Result {
   const lines = input
     .split(`\n`)
@@ -38,13 +116,14 @@ function getStrings(input: string): Result {
     .filter((x) => x.length > 0);
 
   // down
-  let leftToRight: string[] = [];
+  const leftToRight: string[] = [];
   for (let i = 0; i < lines.length; i++) {
     leftToRight.push(lines[i]);
   }
-  let rightToLeft: string[] = [...leftToRight.map((x) => [...x].reverse().join(""))];
+  const rightToLeft: string[] = [...leftToRight.map((x) => [...x].reverse().join(""))];
+
   // across
-  let topToBottom: string[] = [];
+  const topToBottom: string[] = [];
   for (let i = 0; i < lines[0].length; i++) {
     let str = "";
     for (let j = 0; j < lines.length; j++) {
@@ -52,18 +131,8 @@ function getStrings(input: string): Result {
     }
     topToBottom.push(str);
   }
-  let bottomToTop: string[] = [...topToBottom.map((x) => [...x].reverse().join(""))];
-  // diagonal top left to bottom right
+  const bottomToTop: string[] = [...topToBottom.map((x) => [...x].reverse().join(""))];
 
-  const diagTopLeftToBottomRight: string[] = [];
-  for (let x = 0; x < lines[0].length; x++) {
-    let str = "";
-    for (let y = 0; y < lines.length; y++) {
-      console.debug(lines[x]);
-      //   str += lines[x][y];
-    }
-    diagTopLeftToBottomRight.push(str);
-  }
   return {
     topToBottom,
     bottomToTop,
