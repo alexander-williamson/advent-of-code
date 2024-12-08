@@ -63,7 +63,7 @@ function calculate(input: string): Result {
   });
   aValues = aValues.sort((a, b) => a - b);
   bValues = bValues.sort((a, b) => a - b);
-  const frequencyMap: Record<string, number> = bValues.reduce((map, num) => {
+  const frequencyMap: Record<number, number> = bValues.reduce<Record<number, number>>((map, num) => {
     map[num] = (map[num] || 0) + 1;
     return map;
   }, {});
