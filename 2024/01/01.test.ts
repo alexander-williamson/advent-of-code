@@ -67,7 +67,6 @@ function calculate(input: string): Result {
     map[num] = (map[num] || 0) + 1;
     return map;
   }, {});
-  console.debug(frequencyMap);
   let differences: number = 0;
   let similariries: number = 0;
   for (let i = 0; i < aValues.length; i++) {
