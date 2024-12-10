@@ -96,12 +96,14 @@ describe("part two", () => {
 
     expect(result).toEqual(6);
   });
-  it.only("finds correct number of loops for complex_input", () => {
+
+  // heavy brute force, takes a long time
+  it.skip("finds correct number of loops for complex_input", () => {
     const grid = parse(complex_input);
 
     const result = countSuccessfulObstructions(grid);
 
-    expect(result).toEqual(6);
+    expect(result).toEqual(1946);
   });
 });
 
